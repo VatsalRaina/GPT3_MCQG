@@ -4,9 +4,8 @@ import sys
 import openai
 
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
-parser.add_argument('--prediction_save_path', type=str, help='Load path to which trained model will be saved')
+parser.add_argument('--save_path', type=str, help='Load path to which trained model will be saved')
 parser.add_argument('--context_path', type=str, help='Load path to contexts.txt')
-parser.add_argument('--seed', type=int, default=1, help='Specify the global random seed')
 parser.add_argument('--openai_access_key', type=str, help='Access key from OpenAI')
 
 def main(args):
