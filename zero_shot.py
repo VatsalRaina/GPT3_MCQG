@@ -29,7 +29,7 @@ def main(args):
         model="text-davinci-002",
         prompt="Multiple-choice question with 4 options and an answer.\n\n"+context,
         temperature=0.4,
-        max_tokens=3200,
+        max_tokens=1024,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
