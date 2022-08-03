@@ -35,7 +35,7 @@ def main(args):
         presence_penalty=0
         )
 
-        response_text = response["choices"]["text"].replace("\n", " [SEP] ")
+        response_text = response["choices"][0]["text"].replace("\n", " [SEP] ")
 
         all_responses.append(response_text)
 
