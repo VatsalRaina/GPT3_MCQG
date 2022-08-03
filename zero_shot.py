@@ -6,6 +6,7 @@ import openai
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--save_path', type=str, help='Load path to which trained model will be saved')
 parser.add_argument('--context_path', type=str, help='Load path to contexts.txt')
+parser.add_argument('--part', type=int, default=1, help='Specify the segment of 100')
 parser.add_argument('--openai_access_key', type=str, help='Access key from OpenAI')
 
 def main(args):
@@ -24,7 +25,12 @@ def main(args):
 
     count = 0
 
-    for context in all_contexts:
+    # Do 100 at a time for safety
+    val = 100
+    start = (args.part-1)*val
+    end = min(args.part * val, len(all_contexts))
+
+    for context in all_contexts[start:end]:
         response = openai.Completion.create(
         model="text-davinci-002",
         prompt="Multiple-choice question with 4 options and an answer.\n\n"+context,
@@ -44,7 +50,7 @@ def main(args):
         # if count == 3:
         #     break
 
-    with open(args.save_path+"responses.txt", 'w') as f:
+    with open(args.save_path+str(args.part)+"_responses.txt", 'w') as f:
         f.writelines("%s\n" % resp for resp in all_responses)
 
 
