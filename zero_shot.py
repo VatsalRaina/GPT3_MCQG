@@ -27,9 +27,9 @@ def main(args):
     for context in all_contexts:
         response = openai.Completion.create(
         model="text-davinci-002",
-        prompt="Generate a multiple-choice question with 4 options and answer for this passage\n\n"+context,
+        prompt="Multiple-choice question with 4 options and an answer.\n\n"+context,
         temperature=0.4,
-        max_tokens=3000,
+        max_tokens=3200,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -40,8 +40,9 @@ def main(args):
         all_responses.append(response_text)
 
         count += 1
-        if count == 3:
-            break
+        print(count)
+        # if count == 3:
+        #     break
 
     with open(args.save_path+"responses.txt", 'w') as f:
         f.writelines("%s\n" % resp for resp in all_responses)
