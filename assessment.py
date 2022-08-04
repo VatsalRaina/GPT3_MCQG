@@ -58,7 +58,7 @@ def organise_data(questions, contexts):
             if len(opts) == 4:
                 break
         curr_point = {'question': qu, 'context': context, 'options':opts}
-        print(curr_point)
+        # print(curr_point)
         organised_data.append(curr_point)
     return organised_data
 
