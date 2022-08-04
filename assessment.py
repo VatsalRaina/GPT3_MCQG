@@ -40,7 +40,7 @@ def organise_data(questions, contexts):
         question = question.replace(" a. ", " ").replace(" b. ", " ").replace(" c. ", " ").replace(" d. ", " ")
 
         first_sep_pos = question.find("[SEP]")
-        question = question[sep_pos+6:]
+        question = question[first_sep_pos+6:]
         first_sep_pos = question.find("[SEP]")
         qu = question[:first_sep_pos]
         opts = []
