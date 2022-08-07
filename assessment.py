@@ -1,3 +1,8 @@
+"""
+Assessment for GPT-3 generated questions and answer options.
+The first 3 QA models are used for assessment and the second 3 QA models are used for prediction.
+"""
+
 import argparse
 import os
 import sys
@@ -16,7 +21,7 @@ MAXLEN = 512
 parser = argparse.ArgumentParser(description='Get all command line arguments.')
 parser.add_argument('--context_path', type=str, help='Load path of contexts')
 parser.add_argument('--response_path', type=str, help='Load path of question_answer')
-parser.add_argument('--models_dir', type=str, help='Specify path to directory containing all trained QA models')
+parser.add_argument('--models_dir', type=str, help='Specify path to directory containing 6 trained QA models for assessment')
 parser.add_argument('--models_complexity_dir', type=str, help='Specify path to directory containing all trained complexity models')
 parser.add_argument('--batch_size', type=int, default=4, help='Specify the batch size')
 
@@ -175,14 +180,18 @@ def get_unanswerability(all_logits):
     return np.mean(exe)
 
 def get_accuracy(all_logits):
-    ens_logits = np.mean(all_logits, axis=0)
-    class_preds = np.argmax(ens_logits, axis=-1)
+    pred_logits = all_logits[:, 3:]
+    assess_logits = all_logits[:, :3]
+    pred_ens_logits = np.mean(pred_logits, axis=0)
+    assess_ens_logits = np.mean(assess_logits, axis=0)
+    class_pred = np.argmax(pred_ens_logits, axis=-1)
+    class_assess = np.argmax(assess_ens_logits, axis=-1)
     num_correct = 0
-    for pred in class_preds:
-        if pred == 0:
+    for pred, assess in zip(class_pred, class_assess):
+        if pred == assess:
             num_correct += 1
 
-    return num_correct / len(class_preds)
+    return num_correct / len(class_pred)
 
 def get_complexity_predictions(test_data, models, device, args):
 
@@ -267,20 +276,21 @@ def main(args):
 
     device = get_default_device()
     models = []
-    seeds = [1, 2, 3]
+    seeds = [1, 2, 3, 4, 5, 6]
     for seed in seeds:
         model_path = args.models_dir + str(seed) + '/electra_QA_MC_seed' + str(seed) + '.pt'
         model = torch.load(model_path, map_location=device)
         model.eval().to(device)
         models.append(model)
     
-    all_logits = get_qa_predictions(organised_data, models, device, args)
+    all_logits_extended = get_qa_predictions(organised_data, models, device, args)
+    all_logits = all_logits_extended[:, :3]
 
     frac_unans = get_unanswerability(all_logits)
     print("Unanswerability score:", frac_unans)
 
-    # frac_acc = get_accuracy(all_logits)
-    # print("Fraction accuracy:", frac_acc)
+    frac_acc = get_accuracy(all_logits_extended)
+    print("Fraction accuracy:", frac_acc)
 
     complexity_models = []
     seeds = [1, 2, 3]
