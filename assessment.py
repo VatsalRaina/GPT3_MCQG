@@ -180,8 +180,8 @@ def get_unanswerability(all_logits):
     return np.mean(exe)
 
 def get_accuracy(all_logits):
-    pred_logits = all_logits[:, 3:]
-    assess_logits = all_logits[:, :3]
+    pred_logits = all_logits[3:]
+    assess_logits = all_logits[:3]
     pred_ens_logits = np.mean(pred_logits, axis=0)
     assess_ens_logits = np.mean(assess_logits, axis=0)
     class_pred = np.argmax(pred_ens_logits, axis=-1)
@@ -284,7 +284,7 @@ def main(args):
         models.append(model)
     
     all_logits_extended = get_qa_predictions(organised_data, models, device, args)
-    all_logits = all_logits_extended[:, :3]
+    all_logits = all_logits_extended[:3]
 
     frac_unans = get_unanswerability(all_logits)
     print("Unanswerability score:", frac_unans)
